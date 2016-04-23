@@ -102,6 +102,8 @@ add_library(KF5::CoreAddons ALIAS KF5CoreAddons)
 
 target_include_directories(KF5CoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 
+set_property(TARGET KF5CoreAddons PROPERTY CXX_STANDARD 14)
+
 target_link_libraries(KF5CoreAddons
   PUBLIC
     Qt5::Core
@@ -191,6 +193,22 @@ ecm_generate_headers(KCoreAddons_HEADERS
     RELATIVE util
     REQUIRED_HEADERS KCoreAddons_HEADERS
 )
+
+find_package(PythonModuleGeneration)
+
+if (PythonModuleGeneration_FOUND)
+  ecm_generate_python_binding(
+    TARGET KF5::CoreAddons
+    PYTHONNAMESPACE PyKF5
+    MODULENAME KCoreAddons
+    RULES_FILE "${CMAKE_SOURCE_DIR}/cmake/rules_PyKF5.py"
+    SIP_DEPENDS
+      QtCore/QtCoremod.sip
+    HEADERS
+      ${KCoreAddons_HEADERS}
+  )
+endif()
+
 
 install(TARGETS KF5CoreAddons EXPORT KF5CoreAddonsTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
 

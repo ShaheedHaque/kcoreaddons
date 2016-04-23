@@ -45,6 +45,8 @@ struct passwd;
 struct group;
 #endif
 
+#include <limits>
+
 // The following is to avoid compile errors using msvc, and it is done
 // using a common #define to avoid helpful people accidentally cleaning this
 // not quite pretty thing and breaking it for people on windows.
