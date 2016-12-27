@@ -40,12 +40,14 @@ def local_container_rules():
         [".*", "KGroupId", ".*", ".*", ".*", discard_base]
     ]
 
-def qualify_kshell_enum(container, function, parameter, sip, matcher):
-    sip["decl"] = "KShell::" + sip["decl"]
+def qualify_enum_initialiser(container, function, parameter, sip, matcher):
+    """Enums in initialisers need to be fully qualified."""
+    sip["init"] = rules_engine._parents(function) + "::" + sip["init"]
 
 def local_parameter_rules():
     return [
-        ["KShell", "splitArgs", ".*", "Options.*flags.*", ".*", qualify_kshell_enum],
+        ["KShell", "splitArgs", "flags", ".*", ".*", qualify_enum_initialiser],
+        ["KUrlMimeData", "urlsFromMimeData", "decodeOptions", ".*", ".*", qualify_enum_initialiser],
     ]
 
 def local_function_rules():
@@ -63,9 +65,6 @@ def local_function_rules():
         # Use forward declared types
         ["KPluginFactory", "createPartObject", ".*", ".*", ".*", rules_engine.function_discard],
         ["KPluginFactory", "create", ".*", ".*", ".*", rules_engine.function_discard],
-
-        # Something is broken in our initializer detection
-        ["KShell", "splitArgs", ".*", ".*", ".*", rules_engine.function_discard],
 
         ["KMacroExpanderBase", "expandMacrosShellQuote", ".*", ".*", ".*, int ", rules_engine.function_discard],
 
